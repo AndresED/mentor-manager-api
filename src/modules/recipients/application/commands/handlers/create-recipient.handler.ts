@@ -10,7 +10,7 @@ export class CreateRecipientHandler
   constructor(private createRecipientUseCase: CreateRecipientUseCase) {}
 
   async execute(command: CreateRecipientCommand): Promise<Recipient> {
-    const { name, email, role } = command;
-    return this.createRecipientUseCase.execute(name, email, role);
+    const { name, email, role, projects } = command;
+    return this.createRecipientUseCase.execute(name, email, role, projects);
   }
 }

@@ -11,6 +11,9 @@ export class Recipient {
 
   @Prop()
   role: string;
+
+  @Prop()
+  projects: string[];
 }
 
 export type RecipientDocument = Recipient & Document;

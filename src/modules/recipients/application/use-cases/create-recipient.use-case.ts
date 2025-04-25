@@ -9,11 +9,17 @@ export class CreateRecipientUseCase {
     private recipientRepository: IRecipientRepository,
   ) {}
 
-  async execute(name: string, email: string, role: string): Promise<Recipient> {
+  async execute(
+    name: string,
+    email: string,
+    role: string,
+    projects: string[],
+  ): Promise<Recipient> {
     return this.recipientRepository.create({
       name,
       email,
       role,
+      projects,
     });
   }
 }

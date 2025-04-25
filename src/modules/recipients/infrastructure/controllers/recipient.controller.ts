@@ -24,13 +24,21 @@ export class RecipientController {
 
   @Post()
   async create(
-    @Body() createRecipientDto: { name: string; email: string; role: string },
+    @Body()
+    createRecipientDto: {
+      name: string;
+      email: string;
+      role: string;
+      projects: string[];
+    },
   ): Promise<Recipient> {
+    console.log('createRecipientDto', createRecipientDto);
     return this.commandBus.execute(
       new CreateRecipientCommand(
         createRecipientDto.name,
         createRecipientDto.email,
         createRecipientDto.role,
+        createRecipientDto.projects,
       ),
     );
   }
@@ -53,6 +61,7 @@ export class RecipientController {
       name?: string;
       email?: string;
       role?: string;
+      projects?: string[];
     },
   ): Promise<Recipient> {
     return this.commandBus.execute(
