@@ -69,6 +69,12 @@ export class Tracking {
 
   @Prop({ default: false })
   reportSent: boolean;
+
+  @Prop({ default: false })
+  weeklyMeetings: boolean;
+
+  @Prop({ default: false })
+  notesWeeklyMeetings: string;
 }
 
 export type TrackingDocument = Tracking & Document;

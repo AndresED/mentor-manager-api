@@ -15,5 +15,7 @@ export class UpdateTrackingCommand {
     public readonly notesCodeReviews?: string,
     public readonly pairProgramming?: boolean,
     public readonly notesPairProgramming?: string,
+    public readonly weeklyMeetings?: boolean,
+    public readonly notesWeeklyMeetings?: string,
   ) {}
 }

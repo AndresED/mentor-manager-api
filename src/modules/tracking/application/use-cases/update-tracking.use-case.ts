@@ -6,7 +6,7 @@ import { Tracking } from '../../domain/entities/tracking.entity';
 export class UpdateTrackingUseCase {
   constructor(
     @Inject('ITrackingRepository')
-    private trackingRepository: ITrackingRepository,
+    private readonly trackingRepository: ITrackingRepository,
   ) {}
 
   async execute(id: string, data: Partial<Tracking>): Promise<Tracking> {

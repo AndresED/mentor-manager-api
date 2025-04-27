@@ -77,6 +77,8 @@ export class TrackingController {
       notesCodeReviews?: string;
       pairProgramming?: boolean;
       notesPairProgramming?: string;
+      weeklyMeetings?: boolean;
+      notesWeeklyMeetings?: string;
     },
   ): Promise<Tracking> {
     return this.commandBus.execute(
@@ -94,6 +96,8 @@ export class TrackingController {
         updateTrackingDto.notesCodeReviews,
         updateTrackingDto.pairProgramming,
         updateTrackingDto.notesPairProgramming,
+        updateTrackingDto.weeklyMeetings,
+        updateTrackingDto.notesWeeklyMeetings,
       ),
     );
   }

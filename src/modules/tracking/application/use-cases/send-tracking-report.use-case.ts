@@ -87,6 +87,8 @@ export class SendTrackingReportUseCase {
         notesCodeReviews: this.formatContent(tracking.notesCodeReviews),
         pairProgramming: tracking.pairProgramming ? 'Sí' : 'No',
         notesPairProgramming: this.formatContent(tracking.notesPairProgramming),
+        weeklyMeetings: tracking.weeklyMeetings ? 'Sí' : 'No',
+        notesWeeklyMeetings: this.formatContent(tracking.notesWeeklyMeetings),
       };
 
       // Enviar el email usando el servicio
