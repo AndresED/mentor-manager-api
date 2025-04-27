@@ -148,23 +148,24 @@ Authorization: Bearer <token>
 ## Environment Variables
 
 ```env
-# Server
-PORT=3000
-NODE_ENV=development
+# Server Configuration
+PORT=3000                    # Puerto para la aplicación (opcional)
+NODE_ENV=development        # Entorno de la aplicación
 
-# Database
-MONGODB_URI=mongodb://localhost:27017/devtrack
+# MongoDB Configuration
+MONGODB_URI=mongodb://localhost:27017/devtrack    # URI de conexión a MongoDB
 
-# JWT
-JWT_SECRET=your-secret-key
-JWT_EXPIRES_IN=1h
-REFRESH_TOKEN_EXPIRES_IN=7d
+# JWT Configuration
+JWT_SECRET=your-secret-key          # Clave secreta para JWT
+JWT_EXPIRATION=1h                   # Tiempo de expiración del token de acceso
+JWT_REFRESH_SECRET=your-refresh-key # Clave secreta para refresh token
+JWT_REFRESH_EXPIRATION=7d           # Tiempo de expiración del refresh token
 
-# Email (optional)
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=user@example.com
-SMTP_PASS=password
+# Email Configuration (EmailJS)
+EMAILJS_PUBLIC_KEY=your-public-key   # Clave pública de EmailJS
+EMAILJS_PRIVATE_KEY=your-private-key # Clave privada de EmailJS
+EMAILJS_SERVICE_ID=service-id        # ID del servicio de EmailJS
+EMAILJS_TEMPLATE_ID=template-id      # ID de la plantilla de EmailJS
 ```
 
 ## Testing
