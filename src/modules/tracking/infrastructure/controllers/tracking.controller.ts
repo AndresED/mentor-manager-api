@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateTrackingCommand } from '../../application/commands/create-tracking.command';
@@ -19,7 +20,11 @@ import {
   Tracking,
   TrackingStatus,
 } from '../../domain/entities/tracking.entity';
-
+import { ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
+import { SwaggerApiErrorResponses } from '../../../../shared/infrastructure/decorators/swagger-api-error-responses.decorator';
+import { TokenRevocationGuard } from '../../../auth/infrastructure/guards/token-revocation.guard';
+import { AuthGuard } from '@nestjs/passport';
+@SwaggerApiErrorResponses()
 @Controller('trackings')
 export class TrackingController {
   constructor(
@@ -28,6 +33,9 @@ export class TrackingController {
   ) {}
 
   @Post()
+  @ApiBearerAuth('Authorization')
+  @ApiHeader({ name: 'Authorization', required: true })
+  @UseGuards(AuthGuard('jwt'), TokenRevocationGuard)
   async create(
     @Body()
     createTrackingDto: {
@@ -48,6 +56,9 @@ export class TrackingController {
   }
 
   @Get()
+  @ApiBearerAuth('Authorization')
+  @ApiHeader({ name: 'Authorization', required: true })
+  @UseGuards(AuthGuard('jwt'), TokenRevocationGuard)
   async findAll(
     @Query('projectId') projectId?: string,
     @Query('status') status?: string,
@@ -56,11 +67,17 @@ export class TrackingController {
   }
 
   @Get(':id')
+  @ApiBearerAuth('Authorization')
+  @ApiHeader({ name: 'Authorization', required: true })
+  @UseGuards(AuthGuard('jwt'), TokenRevocationGuard)
   async findOne(@Param('id') id: string): Promise<Tracking> {
     return this.queryBus.execute(new GetTrackingByIdQuery(id));
   }
 
   @Put(':id')
+  @ApiBearerAuth('Authorization')
+  @ApiHeader({ name: 'Authorization', required: true })
+  @UseGuards(AuthGuard('jwt'), TokenRevocationGuard)
   async update(
     @Param('id') id: string,
     @Body()
@@ -103,11 +120,17 @@ export class TrackingController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth('Authorization')
+  @ApiHeader({ name: 'Authorization', required: true })
+  @UseGuards(AuthGuard('jwt'), TokenRevocationGuard)
   async remove(@Param('id') id: string): Promise<boolean> {
     return this.commandBus.execute(new DeleteTrackingCommand(id));
   }
 
   @Post(':id/send-report')
+  @ApiBearerAuth('Authorization')
+  @ApiHeader({ name: 'Authorization', required: true })
+  @UseGuards(AuthGuard('jwt'), TokenRevocationGuard)
   async sendReport(@Param('id') id: string): Promise<boolean> {
     return this.commandBus.execute(new SendTrackingReportCommand(id));
   }

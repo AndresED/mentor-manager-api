@@ -19,6 +19,7 @@ import { GetTrackingByIdHandler } from './application/queries/handlers/get-track
 import { EmailService } from '../../shared/infrastructure/services/email.service';
 import { ProjectsModule } from '../projects/projects.module';
 import { RecipientsModule } from '../recipients/recipients.module';
+import { AuthModule } from '../auth/auth.module';
 
 const CommandHandlers = [
   CreateTrackingHandler,
@@ -40,6 +41,7 @@ const UseCases = [
 
 @Module({
   imports: [
+    AuthModule,
     CqrsModule,
     MongooseModule.forFeature([
       { name: Tracking.name, schema: TrackingSchema },

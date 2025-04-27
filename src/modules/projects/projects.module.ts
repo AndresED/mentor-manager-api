@@ -14,6 +14,7 @@ import { UpdateProjectHandler } from './application/commands/handlers/update-pro
 import { DeleteProjectHandler } from './application/commands/handlers/delete-project.handler';
 import { GetProjectsHandler } from './application/queries/handlers/get-projects.handler';
 import { GetProjectByIdHandler } from './application/queries/handlers/get-project-by-id.handler';
+import { AuthModule } from '../auth/auth.module';
 
 const CommandHandlers = [
   CreateProjectHandler,
@@ -35,6 +36,7 @@ const UseCases = [
   imports: [
     CqrsModule,
     MongooseModule.forFeature([{ name: Project.name, schema: ProjectSchema }]),
+    AuthModule,
   ],
   controllers: [ProjectController],
   providers: [

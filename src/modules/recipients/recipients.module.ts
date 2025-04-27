@@ -14,6 +14,7 @@ import { UpdateRecipientHandler } from './application/commands/handlers/update-r
 import { DeleteRecipientHandler } from './application/commands/handlers/delete-recipient.handler';
 import { GetRecipientsHandler } from './application/queries/handlers/get-recipients.handler';
 import { GetRecipientByIdHandler } from './application/queries/handlers/get-recipient-by-id.handler';
+import { AuthModule } from '../auth/auth.module';
 
 const CommandHandlers = [
   CreateRecipientHandler,
@@ -33,6 +34,7 @@ const UseCases = [
 
 @Module({
   imports: [
+    AuthModule,
     CqrsModule,
     MongooseModule.forFeature([
       { name: Recipient.name, schema: RecipientSchema },
