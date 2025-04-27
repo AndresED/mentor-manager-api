@@ -10,7 +10,10 @@ export class UpdateTrackingCommand {
     public readonly observations?: string,
     public readonly nextObjectives?: string,
     public readonly coffeeBreaks?: boolean,
+    public readonly notesCoffeeBreaks?: string,
     public readonly codeReviews?: boolean,
+    public readonly notesCodeReviews?: string,
     public readonly pairProgramming?: boolean,
+    public readonly notesPairProgramming?: string,
   ) {}
 }

@@ -72,8 +72,11 @@ export class TrackingController {
       observations?: string;
       nextObjectives?: string;
       coffeeBreaks?: boolean;
+      notesCoffeeBreaks?: string;
       codeReviews?: boolean;
+      notesCodeReviews?: string;
       pairProgramming?: boolean;
+      notesPairProgramming?: string;
     },
   ): Promise<Tracking> {
     return this.commandBus.execute(
@@ -86,8 +89,11 @@ export class TrackingController {
         updateTrackingDto.observations,
         updateTrackingDto.nextObjectives,
         updateTrackingDto.coffeeBreaks,
+        updateTrackingDto.notesCoffeeBreaks,
         updateTrackingDto.codeReviews,
+        updateTrackingDto.notesCodeReviews,
         updateTrackingDto.pairProgramming,
+        updateTrackingDto.notesPairProgramming,
       ),
     );
   }

@@ -4,6 +4,8 @@ import { EmailService } from '../../../../shared/infrastructure/services/email.s
 import { IProjectRepository } from '../../../projects/domain/repositories/project.repository.interface';
 import { IRecipientRepository } from '../../../recipients/domain/repositories/recipient.repository.interface';
 import { Types } from 'mongoose';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Injectable()
 export class SendTrackingReportUseCase {
@@ -18,51 +20,122 @@ export class SendTrackingReportUseCase {
   ) {}
 
   async execute(trackingId: string): Promise<boolean> {
-    const tracking = await this.trackingRepository.findById(trackingId);
-
-    if (!tracking) {
-      throw new NotFoundException(`Tracking with ID ${trackingId} not found`);
-    }
-
-    // Convert to string safely
-    let projectIdString: string;
-    if (tracking.projectId instanceof Types.ObjectId) {
-      projectIdString = tracking.projectId.toHexString();
-    } else if (
-      typeof tracking.projectId === 'object' &&
-      tracking.projectId !== null
-    ) {
-      const objId = tracking.projectId as {
-        _id?: { toString(): string };
-        id?: { toString(): string };
-      };
-      const idString = objId._id?.toString() ?? objId.id?.toString();
-      if (!idString) {
-        throw new Error('Invalid project ID format');
+    try {
+      // Obtener el tracking
+      const tracking = await this.trackingRepository.findById(trackingId);
+      if (!tracking) {
+        throw new NotFoundException(`Tracking with ID ${trackingId} not found`);
       }
-      projectIdString = idString;
-    } else {
-      projectIdString = String(tracking.projectId);
-    }
 
-    const project = await this.projectRepository.findById(projectIdString);
+      // Convertir projectId a string
+      const projectIdString = this.getProjectIdString(tracking.projectId);
 
-    if (!project) {
-      throw new NotFoundException(
-        `Project with ID ${projectIdString} not found`,
+      // Obtener el proyecto
+      const project = await this.projectRepository.findById(projectIdString);
+      if (!project) {
+        throw new NotFoundException(
+          `Project with ID ${projectIdString} not found`,
+        );
+      }
+
+      // Obtener todos los recipients que están asociados al proyecto
+      const recipients = await this.recipientRepository.findAll();
+      const projectRecipients = recipients.filter((recipient) =>
+        recipient.projects?.includes(projectIdString),
       );
+
+      if (projectRecipients.length === 0) {
+        throw new NotFoundException(
+          `No recipients found for project ${projectIdString}`,
+        );
+      }
+
+      // Obtener los emails de los recipients
+      const recipientEmails = projectRecipients.map(
+        (recipient) => recipient.email,
+      );
+
+      // Formatear las fechas
+      const startDate = new Date(tracking.startDate).toLocaleDateString(
+        'es-ES',
+        {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        },
+      );
+      const endDate = new Date(tracking.endDate).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+
+      // Preparar los parámetros del template
+      const templateParams = {
+        developer: project.assignedDeveloper,
+        projectName: project.name,
+        startDate,
+        endDate,
+        completedObjectives: this.formatContent(tracking.completedObjectives),
+        pendingObjectives: this.formatContent(tracking.pendingObjectives),
+        nextObjectives: this.formatContent(tracking.nextObjectives),
+        incidents: this.formatContent(tracking.incidents),
+        observations: this.formatContent(tracking.observations),
+        coffeeBreaks: tracking.coffeeBreaks ? 'Sí' : 'No',
+        notesCoffeeBreaks: this.formatContent(tracking.notesCoffeeBreaks),
+        codeReviews: tracking.codeReviews ? 'Sí' : 'No',
+        notesCodeReviews: this.formatContent(tracking.notesCodeReviews),
+        pairProgramming: tracking.pairProgramming ? 'Sí' : 'No',
+        notesPairProgramming: this.formatContent(tracking.notesPairProgramming),
+      };
+
+      // Enviar el email usando el servicio
+      const TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID ?? '';
+      await this.emailService.sendEmail(
+        TEMPLATE_ID,
+        templateParams,
+        recipientEmails,
+      );
+
+      // Marcar el tracking como enviado
+      await this.trackingRepository.update(trackingId, { reportSent: true });
+
+      return true;
+    } catch (error) {
+      throw new Error(error);
     }
+  }
 
-    const recipients = await this.recipientRepository.findAll();
-
-    if (recipients.length === 0) {
-      throw new NotFoundException('No recipients found to send the report');
+  private getProjectIdString(projectId: any): string {
+    try {
+      if (projectId instanceof Types.ObjectId) {
+        return projectId.toHexString();
+      }
+      if (typeof projectId === 'object' && projectId !== null) {
+        const objId = projectId as {
+          _id?: { toString(): string };
+          id?: { toString(): string };
+        };
+        const idString = objId._id?.toString() ?? objId.id?.toString();
+        if (!idString) {
+          throw new Error('Invalid project ID format');
+        }
+        return idString;
+      }
+      return String(projectId);
+    } catch (error) {
+      throw new Error(error);
     }
+  }
 
-    await this.emailService.sendTrackingReport(tracking, project, recipients);
-
-    await this.trackingRepository.update(trackingId, { reportSent: true });
-
-    return true;
+  private formatContent(content: string | null | undefined): string {
+    if (!content) return 'No hay información registrada';
+    // Decodificar entidades HTML y mantener el formato
+    return content
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&amp;/g, '&');
   }
 }

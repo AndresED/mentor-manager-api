@@ -53,10 +53,19 @@ export class Tracking {
   coffeeBreaks: boolean;
 
   @Prop({ default: false })
+  notesCoffeeBreaks: string;
+
+  @Prop({ default: false })
   codeReviews: boolean;
 
   @Prop({ default: false })
+  notesCodeReviews: string;
+
+  @Prop({ default: false })
   pairProgramming: boolean;
+
+  @Prop({ default: false })
+  notesPairProgramming: string;
 
   @Prop({ default: false })
   reportSent: boolean;
